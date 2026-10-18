@@ -8,7 +8,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
 from sklearn.model_selection import GridSearchCV
-
+from sklearn.metrics import confusion_matrix, classification_report
 #load data
 dataset = pd.read_csv("dataset/iris.csv")
 
@@ -117,3 +117,45 @@ print("Best CV score:", grid_search.best_score_)
 best_knn = grid_search.best_estimator_
 
 print("Test accuracy:", best_knn.score(x_test, y_test))
+y_pred = best_knn.predict(x_test)
+
+print("Confusion Matrix:")
+print(confusion_matrix(y_test, y_pred))
+
+print("Classification Report:")
+print(classification_report(y_test, y_pred))
+print("LR test accuracy:", LR.score(x_test, y_test))
+lr_pred = LR.predict(x_test)
+
+print("Logistic Regression:")
+print(classification_report(y_test, lr_pred))
+
+lr_pipeline = make_pipeline(
+    StandardScaler(),
+    LogisticRegression(max_iter=200)
+)
+
+lr_param_grid = {
+    "logisticregression__C": [0.01, 0.1, 1, 10, 100],
+    "logisticregression__solver": ["lbfgs"],
+    "logisticregression__max_iter": [200, 500, 1000]
+}
+
+lr_grid_search = GridSearchCV(
+    lr_pipeline,
+    lr_param_grid,
+    cv=5,
+    scoring="accuracy"
+)
+
+lr_grid_search.fit(x_train, y_train)
+
+print("Best LR parameters:", lr_grid_search.best_params_)
+print("Best LR CV score:", lr_grid_search.best_score_)
+best_lr = lr_grid_search.best_estimator_
+
+print("Tuned LR test accuracy:", best_lr.score(x_test, y_test))
+lr_pred = best_lr.predict(x_test)
+
+print("Tuned LR Classification Report:")
+print(classification_report(y_test, lr_pred))   
