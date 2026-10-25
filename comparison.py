@@ -9,6 +9,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import confusion_matrix, classification_report
+
+import joblib
 #load data
 dataset = pd.read_csv("dataset/iris.csv")
 
@@ -155,6 +157,8 @@ print("Best LR CV score:", lr_grid_search.best_score_)
 best_lr = lr_grid_search.best_estimator_
 
 print("Tuned LR test accuracy:", best_lr.score(x_test, y_test))
+joblib.dump(best_lr, "iris_tuned_lr.pkl")
+print("Tuned Logistic Regression saved!")
 lr_pred = best_lr.predict(x_test)
 
 print("Tuned LR Classification Report:")

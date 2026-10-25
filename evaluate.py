@@ -6,6 +6,9 @@ from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix, classification_report
 from sklearn.metrics import pairwise_distances
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
+from sklearn.model_selection import GridSearchCV
 
 # Load data and recreate the same split
 dataset = pd.read_csv("dataset/iris.csv")
@@ -25,10 +28,15 @@ x_train, x_test, y_train, y_test = train_test_split(
 
 # Load the saved model
 model = joblib.load("iris_model.pkl")
-
+LR = make_pipeline(StandardScaler(), LogisticRegression(max_iter=200))
 # Predict
 y_pred = model.predict(x_test)
-
+y_pred_try = model.predict_proba(x_test)
+prob_df = pd.DataFrame(
+    y_pred_try,
+    columns=model.classes_,
+    index=x_test.index
+)
 # Detailed evaluation
 print("Confusion matrix:")
 print(confusion_matrix(y_test, y_pred))
@@ -38,7 +46,7 @@ print(classification_report(y_test, y_pred))
 
 # Cross-validation on training data
 cv_scores = cross_val_score(
-    LogisticRegression(max_iter=200),
+    LR,
     x_train, y_train,
     cv=5
 )
@@ -102,4 +110,5 @@ probabilities = pd.DataFrame(
 
 print("\nPrediction probabilities:")
 print(probabilities.round(3).to_string())
-print(confusion_matrix(y_test, y_pred))  
+print(confusion_matrix(y_test, y_pred))
+print(prob_df.round(3))

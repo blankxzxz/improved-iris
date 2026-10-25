@@ -1,92 +1,71 @@
-# Iris Species Classification — Experiment Log
+# Iris Classification — Experiment Log
 
 ## 1. Objective
+Compare baseline classification models and tune Logistic Regression and KNN to find a suitable Iris species classifier.
 
-Build a machine learning classifier that predicts the species of an Iris flower from its sepal and petal measurements.
+## 2. Dataset
+- File: `dataset/iris.csv`
+- Samples: 150
+- Features: SepalLengthCm, SepalWidthCm, PetalLengthCm, PetalWidthCm
+- Target: `Species`
 
-## 2. Dataset and features
+## 3. Experimental Setup
+- Training/test split: 80% / 20%
+- Random state: 42
+- Stratification: Yes
+- Cross-validation: 5-fold
+- Scaling: `StandardScaler` inside pipelines for Logistic Regression and KNN
+- Scoring metric: Accuracy
 
-- **Dataset:** `dataset/iris.csv`
-- **Input features:** SepalLengthCm, SepalWidthCm, PetalLengthCm, PetalWidthCm
-- **Target:** Species
-- **Dataset size:** 150 observations
-- **Evaluation split:** 80% training, 20% testing
-- **Random state:** 42
-- **Stratification:** Enabled
-- **Cross-validation:** 5-fold
+## 4. Baseline Cross-Validation Results
+| Model | Mean CV Accuracy | CV Standard Deviation | Training Accuracy |
+|---|---:|---:|---:|
+| Logistic Regression | 0.9583 | 0.0264 | 0.9583 |
+| Decision Tree | 0.9417 | 0.0204 | 1.0000 |
+| Random Forest | 0.9500 | 0.0167 | 1.0000 |
+| KNN (k=5) | 0.9667 | 0.0312 | 0.9750 |
 
-## 3. Baseline model comparison
-
-| Model | Mean CV accuracy | CV standard deviation |
-|---|---:|---:|
-| Logistic Regression | 95.83% | 2.64 percentage points |
-| Decision Tree | 94.17% | 2.04 percentage points |
-| Random Forest | 95.00% | 1.67 percentage points |
-| K-Nearest Neighbors | 96.67% | 3.12 percentage points |
-
-The baseline models were evaluated using five-fold cross-validation on the training set. Logistic Regression and KNN used standardized features through a pipeline.
-
-## 4. Hyperparameter tuning
-
-### K-Nearest Neighbors
-
-- **Method:** GridSearchCV
-- **Scoring metric:** Accuracy
-- **Cross-validation folds:** 5
-- **Search space:** 5 neighbor counts × 2 weighting options × 2 distance metrics
-- **Configurations evaluated:** 20
-
-Selected configuration:
-- `n_neighbors`: 5
-- `weights`: `uniform`
-- `metric`: `euclidean`
-
-Best mean CV accuracy: **96.67%**
+## 5. Hyperparameter Tuning
+### KNN
+- Search parameters: `n_neighbors`, `weights`, `metric`
+- Best CV accuracy: 0.9667
+- Best parameters: Confirm from the latest script output.
 
 ### Logistic Regression
+- Search parameters: `C`, `solver`, `max_iter`
+- Best CV accuracy: 0.9667
+- Best parameters: `C=10`, `solver=lbfgs`, `max_iter=200`
 
-- **Method:** GridSearchCV
-- **Scoring metric:** Accuracy
-- **Cross-validation folds:** 5
-- **Configurations evaluated:** 15
+## 6. Test-Set Results
+Record the latest output from a single run of `compare_models.py`:
+- Tuned KNN accuracy: Confirm from output.
+- Tuned Logistic Regression accuracy: Confirm from output.
+- Confusion matrices and classification reports: Confirm from output.
 
-Selected configuration:
-- `C`: 10
-- `max_iter`: 200
-- `solver`: `lbfgs`
+## 7. Interpretation
+- Cross-validation estimates performance across multiple training/validation folds.
+- Test accuracy measures performance on one held-out test set.
+- Training accuracy alone is not sufficient to judge generalization.
+- Perfect test accuracy on this split does not guarantee perfect performance on unseen data.
 
-Best mean CV accuracy: **96.67%**
+## 8. Limitations
+The test set has already been examined during experimentation. Its score should be treated as an exploratory result rather than a fully independent final estimate.
 
-## 5. Initial test-set results
+## 9. Reproducibility
+- Main experiment script: `compare_models.py`
+- Verification script: `evaluate_models.py`
+- Dataset: `dataset/iris.csv`
+- Random state: 42
+- Python and scikit-learn versions: Record from the environment used.
 
-| Model | Test accuracy |
-|---|---:|
-| Baseline Logistic Regression | 93.33% |
-| Tuned KNN | 93.33% |
-| Tuned Logistic Regression | 100.00% |
+## 10. Final Model
+- Selected model: Pending final decision
+- Saved artifact: Pending
+- Prediction test: Pending
 
-The test set contains 30 observations. The tuned Logistic Regression model correctly classified all 30 observations in this evaluation.
+## 11. Software Environment
 
-## 6. Initial interpretation
+- Python version: `3.14.6`
+- scikit-learn version: '1.9.0'
 
-Tuned Logistic Regression achieved the highest observed test accuracy among the three results recorded above. Tuned KNN and tuned Logistic Regression achieved the same mean cross-validation accuracy.
 
-The results do not establish that Logistic Regression will always outperform KNN or achieve perfect accuracy on new data. The dataset and test sample are small.
-
-## 7. Evaluation caveat
-
-The test results were examined while comparing and selecting models. Therefore, the test set is no longer a completely independent final evaluation for the overall model-selection process.
-
-Treat these results as an educational experiment. For a stronger final performance estimate, use an evaluation procedure that accounts for model selection, such as nested cross-validation, or evaluate a finalized model on a genuinely untouched dataset.
-
-## 8. Current status
-
-- [x] Train baseline models
-- [x] Compare models using cross-validation
-- [x] Tune KNN with GridSearchCV
-- [x] Tune Logistic Regression with GridSearchCV
-- [x] Evaluate selected models on the existing test split
-- [ ] Verify and consolidate all evaluation results
-- [ ] Save the selected preprocessing-and-model pipeline
-- [ ] Add prediction and automated testing scripts
-- [ ] Finalize README and GitHub documentation
